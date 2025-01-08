@@ -10,6 +10,23 @@ class SuggestionForLogisticon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const List<String> sentences = [
+      'If Socrates is not human, then Socrates is not mortal',
+      'If Socrates is human, then Socrates is mortal',
+      'Socrates is human',
+      'If Socrates is not mortal, then Socrates is not human',
+      // a long sentence
+      'If Socrates is not mortal and Socrates lives in Greece, '
+          'then Socrates is not human or Socrates did not live in Athenas'
+    ];
+
+    const List<String> premisses = [
+      /// premisses of aristotelian syllogism
+      'If Socrates is mortal, then Socrates is human',
+      'Socrates is mortal',
+    ];
+    const chooseWhat =
+        'Choose the correct conclusion for the following deduction';
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -26,7 +43,11 @@ class SuggestionForLogisticon extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(title: const Text('Logisticon suggestion')),
         //body: const DataTableExample(),
-        body: DeductionQuestionWidget(),
+        body: const DeductionQuestionWidget(
+          chooseWhat: chooseWhat,
+          premisses: premisses,
+          sentences: sentences,
+        ),
       ),
     );
   }
@@ -35,25 +56,28 @@ class SuggestionForLogisticon extends StatelessWidget {
 const premissesShadowColor = Color.fromARGB(255, 91, 170, 153);
 const sentencesShadowColor = Color.fromARGB(255, 91, 130, 170);
 
-class DeductionQuestionWidget extends StatelessWidget {
+class DeductionQuestionWidget extends StatefulWidget {
+  const DeductionQuestionWidget(
+      {super.key,
+      required this.chooseWhat,
+      required this.premisses,
+      required this.sentences});
+  final List<String> sentences;
+  final List<String> premisses;
+  final String chooseWhat;
+
+  @override
+  State<DeductionQuestionWidget> createState() =>
+      _DeductionQuestionWidgetState();
+}
+
+class _DeductionQuestionWidgetState extends State<DeductionQuestionWidget> {
   // List of random sentences to display
-  final List<String> sentences = [
-    "The quick brown fox jumps over the lazy dog.",
-    "Life is what happens when you're busy making other plans.",
-    "To be yourself in a world that is constantly trying to make you something else is the greatest accomplishment.",
-    "If you cannot do great things, do small things in a great way.",
-    "The only limit to our realization of tomorrow is our doubts of today."
-  ];
-
-  final List<String> premisses = [
-    /// premisses of aristotelian syllogism
-    'All mammals are warm-blooded animals.',
-    'All humans are mammals.',
-  ];
-
-  DeductionQuestionWidget({super.key});
 
   final ScrollController _scrollbarController = ScrollController();
+  late Color backgroundColor;
+  late Offset distance = const Offset(5, 5);
+  final blur = 15.0;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +85,7 @@ class DeductionQuestionWidget extends StatelessWidget {
     const distance = Offset(5, 5);
     const blur = 15.0;
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Expanded(
           //flex: 5,
@@ -141,109 +165,149 @@ class DeductionQuestionWidget extends StatelessWidget {
 
   Widget _buildOptions(BuildContext context) {
     return SizedBox(
-      height: 150,
+      height: 100,
       child: Container(
         color: Theme.of(context).scaffoldBackgroundColor,
-        padding: const EdgeInsets.all(12.0),
-        child: Center(
-          child: Column(
-            // shrinkWrap: true,
-            // primary: false,
-            //controller: _scrollbarOptionsController,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ShadowButton(
-                    onPressed: () {},
-                    child: const Text('Add'),
-                  ),
-                  ShadowButton(
-                    onPressed: () {},
-                    child: const Text('Edit'),
-                  ),
-                  ShadowButton(
-                    onPressed: () {},
-                    child: const Text('Delete'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ShadowButton(
-                    onPressed: () {},
-                    child: const Text('Save'),
-                  ),
-                  ShadowButton(
-                    onPressed: () {},
-                    child: const Text('Cancel'),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPremisses() {
-    return ListView.separated(
-      shrinkWrap: true,
-      itemCount: premisses.length,
-      separatorBuilder: (context, index) => Divider(
-        height: 1,
-        color: Colors.grey[200],
-        thickness: 1,
-        // indent: MediaQuery.of(context).size.width * 0.05, // 10% indent
-        // endIndent: MediaQuery.of(context).size.width * 0.1, // 10% endIndent
-      ),
-      itemBuilder: (context, index) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-        child:
-
-            /// put the background of this row in a light grey color
-            Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              /// use (a), (b), (c), ... base on index
-              '(${[
-                'i',
-                'ii',
-                'iii',
-                'iv',
-                'v',
-                'vi',
-                'vii',
-                'viii',
-                'ix',
-                'x'
-              ][index]})',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                premisses[index],
-                style: const TextStyle(fontSize: 16),
-                maxLines: 2,
-                overflow: TextOverflow.visible,
+            Container(
+              /// a grey border of 10px
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: blur,
+                    offset: -distance, // changes position of shadow
+                    color: Colors.white,
+                    spreadRadius: 1,
+                  ),
+                  BoxShadow(
+                    blurRadius: blur,
+                    offset: distance, // changes position of shadow
+                    color: const Color.fromARGB(255, 136, 91, 170),
+                    spreadRadius: 1,
+                  ),
+                ],
               ),
-            )
+              //margin: const EdgeInsets.fromLTRB(10, 10, 20, 10),
+              padding: const EdgeInsets.all(10),
+              child: const SizedBox(
+                height: 70,
+                child: Column(
+                  children: [
+                    Text('0/0   25% Correct', style: TextStyle(fontSize: 12)),
+                    Text('Current Combo: 1', style: TextStyle(fontSize: 12)),
+                    Text('Your best:     0', style: TextStyle(fontSize: 12)),
+                  ],
+                ),
+              ),
+            ),
+            ShadowButton(
+              onPressed: () {},
+              backgroundColor: Colors.lightBlueAccent,
+              shadowColor: const Color.fromARGB(255, 72, 1, 1),
+              child: const Text('Verify'),
+            ),
+            const Row(
+              children: [
+                ShadowIcon(
+                  icon: Icon(
+                    Icons.question_mark_outlined,
+                    color: Colors.blueGrey,
+                    //size: 20,
+                  ),
+                  backgroundColor: Colors.lightGreenAccent,
+                  iconColor: Colors.black87,
+                  shadowColor:
+
+                      /// the complement of lightGreenAccent
+                      Color.fromARGB(255, 80, 34, 1),
+                ),
+                SizedBox(width: 15),
+                ShadowIcon(
+                  icon: Icon(Icons.history_outlined, color: Colors.black45),
+                  backgroundColor: Color.fromARGB(255, 216, 150, 104),
+                  iconColor: Colors.black45,
+                  shadowColor: Color.fromARGB(255, 6, 24, 37),
+                ),
+                SizedBox(width: 10),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
 
+  Widget _buildPremisses() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.chooseWhat,
+          style: const TextStyle(
+            fontSize: 16,
+          ),
+        ),
+        ListView.separated(
+          shrinkWrap: true,
+          itemCount: widget.premisses.length,
+          separatorBuilder: (context, index) => Divider(
+            height: 1,
+            color: Colors.grey[200],
+            thickness: 1,
+            // indent: MediaQuery.of(context).size.width * 0.05, // 10% indent
+            // endIndent: MediaQuery.of(context).size.width * 0.1, // 10% endIndent
+          ),
+          itemBuilder: (context, index) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+            child:
+
+                /// put the background of this row in a light grey color
+                Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  /// use (a), (b), (c), ... base on index
+                  '(${[
+                    'i',
+                    'ii',
+                    'iii',
+                    'iv',
+                    'v',
+                    'vi',
+                    'vii',
+                    'viii',
+                    'ix',
+                    'x'
+                  ][index]})',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    widget.premisses[index],
+                    style: const TextStyle(fontSize: 16),
+                    maxLines: 2,
+                    overflow: TextOverflow.visible,
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildSentenceList() {
     return ListView.separated(
       shrinkWrap: true,
-      itemCount: sentences.length,
+      itemCount: widget.sentences.length,
       separatorBuilder: (context, index) => Divider(
         height: 1,
         color: Colors.grey[200],
@@ -252,7 +316,7 @@ class DeductionQuestionWidget extends StatelessWidget {
         // endIndent: MediaQuery.of(context).size.width * 0.1, // 10% endIndent
       ),
       itemBuilder: (context, index) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
         child:
 
             /// put the background of this row in a light grey color
@@ -268,7 +332,7 @@ class DeductionQuestionWidget extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                sentences[index],
+                widget.sentences[index],
                 style: const TextStyle(fontSize: 16),
                 maxLines: 2,
                 overflow: TextOverflow.visible,
@@ -281,50 +345,34 @@ class DeductionQuestionWidget extends StatelessWidget {
   }
 }
 
-class DataTableExample extends StatefulWidget {
-  const DataTableExample({super.key});
-
-  @override
-  State<DataTableExample> createState() => _DataTableExampleState();
-}
-
-class _DataTableExampleState extends State<DataTableExample> {
-  static const int numItems = 20;
-  List<bool> selected = List<bool>.generate(numItems, (int index) => false);
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: DataTable(
-        columns: const <DataColumn>[
-          DataColumn(
-            label: Text('  '),
-          ),
-        ],
-        rows: List<DataRow>.generate(
-          numItems,
-          (int index) => DataRow(
-            cells: <DataCell>[DataCell(Text('Row $index'))],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ShadowButton extends StatelessWidget {
+class ShadowButton extends StatefulWidget {
   final VoidCallback onPressed;
   final Widget child;
+  final Color? backgroundColor;
+  final Color? shadowColor;
 
-  const ShadowButton({super.key, required this.onPressed, required this.child});
+  const ShadowButton(
+      {super.key,
+      required this.onPressed,
+      required this.child,
+      this.backgroundColor,
+      this.shadowColor});
 
   @override
+  State<ShadowButton> createState() => _ShadowButtonState();
+}
+
+class _ShadowButtonState extends State<ShadowButton> {
+  @override
   Widget build(BuildContext context) {
-    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
+    final backgroundColor =
+        widget.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor;
+    final shadowColor =
+        widget.shadowColor ?? const Color.fromARGB(255, 61, 61, 60);
     const distance = Offset(5, 5);
     const blur = 15.0;
     return GestureDetector(
-      onTap: onPressed,
+      onTap: widget.onPressed,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
@@ -337,15 +385,77 @@ class ShadowButton extends StatelessWidget {
               color: Colors.white.withAlpha(200),
               spreadRadius: -5,
             ),
-            const BoxShadow(
+            BoxShadow(
               blurRadius: blur,
               offset: distance, // changes position of shadow
-              color: Color.fromARGB(255, 227, 172, 99), //Color(0xFFA7A9AF),
+              color: shadowColor, //Color(0xFFA7A9AF),
               spreadRadius: -5,
             ),
           ],
         ),
-        child: child,
+        child: widget.child,
+      ),
+    );
+  }
+}
+
+class ShadowIcon extends StatefulWidget {
+  final Color? backgroundColor;
+  final Color? shadowColor;
+  final Color? iconColor;
+  final Icon icon;
+  const ShadowIcon(
+      {super.key,
+      this.backgroundColor,
+      this.shadowColor,
+      this.iconColor,
+      required this.icon});
+
+  @override
+  State<ShadowIcon> createState() => _ShadowIconState();
+}
+
+class _ShadowIconState extends State<ShadowIcon> {
+  @override
+  Widget build(BuildContext context) {
+    final backgroundColor =
+        widget.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor;
+    final shadowColor =
+        widget.shadowColor ?? const Color.fromARGB(255, 227, 172, 99);
+    const distance = Offset(5, 5);
+    const blur = 15.0;
+    final iconColor = widget.iconColor ?? Colors.brown[300];
+
+    return Container(
+      width: 35,
+      height: 35,
+      //padding: const EdgeInsets.all(0.0),
+      decoration: BoxDecoration(
+        color: backgroundColor, // Sepia background color
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            blurRadius: blur,
+            offset: -distance, // changes position of shadow
+            color: Colors.white.withAlpha(200),
+            spreadRadius: -5,
+          ),
+          BoxShadow(
+            blurRadius: blur,
+            offset: distance, // changes position of shadow
+            color: shadowColor, //Color(0xFFA7A9AF),
+            spreadRadius: -5,
+          ),
+        ],
+      ),
+      child: FittedBox(
+        child: IconButton(
+          icon: widget.icon,
+          color: iconColor,
+          onPressed: () {
+            // Add your onPressed code here!
+          },
+        ),
       ),
     );
   }
