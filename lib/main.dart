@@ -26,7 +26,7 @@ class SuggestionForLogisticon extends StatelessWidget {
       'Socrates is mortal',
     ];
     const chooseWhat =
-        'Choose the correct conclusion for the following deduction';
+        'Choose the correct conclusion for the following deduction:';
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -43,10 +43,12 @@ class SuggestionForLogisticon extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(title: const Text('Logisticon suggestion')),
         //body: const DataTableExample(),
-        body: const DeductionQuestionWidget(
+        body: DeductionQuestionWidget(
           chooseWhat: chooseWhat,
           premisses: premisses,
           sentences: sentences,
+          fontSize: Theme.of(context).textTheme.bodyMedium!.fontSize ?? 16.0,
+          infoFontSize: Theme.of(context).textTheme.bodySmall!.fontSize ?? 12.0,
         ),
       ),
     );
@@ -61,10 +63,13 @@ class DeductionQuestionWidget extends StatefulWidget {
       {super.key,
       required this.chooseWhat,
       required this.premisses,
-      required this.sentences});
+      required this.sentences,
+      required this.fontSize,
+      required this.infoFontSize});
   final List<String> sentences;
   final List<String> premisses;
   final String chooseWhat;
+  final double fontSize, infoFontSize;
 
   @override
   State<DeductionQuestionWidget> createState() =>
@@ -164,11 +169,31 @@ class _DeductionQuestionWidgetState extends State<DeductionQuestionWidget> {
   }
 
   Widget _buildOptions(BuildContext context) {
+    /// backgroundBottomColor is the primary color of the theme
+    var backgroundBottomColor = Theme.of(context).secondaryHeaderColor;
+    final lighterColor = Color.lerp(backgroundBottomColor, Colors.white, 0.3);
+    //backgroundBottomColor = lighterColor ?? backgroundBottomColor;
+    backgroundColor = Theme.of(context).scaffoldBackgroundColor;
+
+    /// variable defaultFontSize has the default font size for the theme
+    final infoFontSize = Theme.of(context).textTheme.bodySmall!.fontSize;
     return SizedBox(
-      height: 100,
+      height: 110,
       child: Container(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        padding: const EdgeInsets.all(8.0),
+        //color: backgroundBottomColor,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              backgroundColor,
+              Color.lerp(backgroundBottomColor, backgroundColor, 0.5)!,
+              backgroundBottomColor,
+            ],
+            stops: const [0.0, 0.1, 1.0], // Transition at 10% of the height
+          ),
+        ),
+        padding: const EdgeInsets.fromLTRB(8, 5, 8, 5),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -176,7 +201,7 @@ class _DeductionQuestionWidgetState extends State<DeductionQuestionWidget> {
               /// a grey border of 10px
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
                     blurRadius: blur,
@@ -194,13 +219,17 @@ class _DeductionQuestionWidgetState extends State<DeductionQuestionWidget> {
               ),
               //margin: const EdgeInsets.fromLTRB(10, 10, 20, 10),
               padding: const EdgeInsets.all(10),
-              child: const SizedBox(
+              child: SizedBox(
                 height: 70,
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('0/0   25% Correct', style: TextStyle(fontSize: 12)),
-                    Text('Current Combo: 1', style: TextStyle(fontSize: 12)),
-                    Text('Your best:     0', style: TextStyle(fontSize: 12)),
+                    Text('0/0   25% Correct',
+                        style: TextStyle(fontSize: infoFontSize)),
+                    Text('Current Combo: 1',
+                        style: TextStyle(fontSize: infoFontSize)),
+                    Text('Your best:     0',
+                        style: TextStyle(fontSize: infoFontSize)),
                   ],
                 ),
               ),
@@ -243,13 +272,15 @@ class _DeductionQuestionWidgetState extends State<DeductionQuestionWidget> {
   }
 
   Widget _buildPremisses() {
+    const premissesFontSize =
+        16.0; //Theme.of(context).textTheme.bodyMedium!.fontSize;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           widget.chooseWhat,
-          style: const TextStyle(
-            fontSize: 16,
+          style: TextStyle(
+            fontSize: widget.fontSize,
           ),
         ),
         ListView.separated(
@@ -285,13 +316,17 @@ class _DeductionQuestionWidgetState extends State<DeductionQuestionWidget> {
                     'ix',
                     'x'
                   ][index]})',
-                  style: const TextStyle(fontSize: 16),
+                  style: TextStyle(
+                    fontSize: widget.fontSize,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     widget.premisses[index],
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(
+                      fontSize: widget.fontSize,
+                    ),
                     maxLines: 2,
                     overflow: TextOverflow.visible,
                   ),
@@ -305,6 +340,8 @@ class _DeductionQuestionWidgetState extends State<DeductionQuestionWidget> {
   }
 
   Widget _buildSentenceList() {
+    const optionsFontSize =
+        16.0; //Theme.of(context).textTheme.bodyMedium!.fontSize;
     return ListView.separated(
       shrinkWrap: true,
       itemCount: widget.sentences.length,
@@ -327,13 +364,17 @@ class _DeductionQuestionWidgetState extends State<DeductionQuestionWidget> {
             Text(
               /// use (a), (b), (c), ... base on index
               "(${String.fromCharCode(97 + index)})",
-              style: const TextStyle(fontSize: 16),
+              style: TextStyle(
+                fontSize: widget.fontSize,
+              ),
             ),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
                 widget.sentences[index],
-                style: const TextStyle(fontSize: 16),
+                style: TextStyle(
+                  fontSize: widget.fontSize,
+                ),
                 maxLines: 2,
                 overflow: TextOverflow.visible,
               ),
