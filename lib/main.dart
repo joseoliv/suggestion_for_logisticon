@@ -46,7 +46,7 @@ class SuggestionForLogisticon extends StatelessWidget {
         body: DeductionQuestionWidget(
           chooseWhat: chooseWhat,
           premisses: premisses,
-          sentences: sentences,
+          conclusions: sentences,
           fontSize: Theme.of(context).textTheme.bodyMedium!.fontSize ?? 16.0,
           infoFontSize: Theme.of(context).textTheme.bodySmall!.fontSize ?? 12.0,
         ),
@@ -63,10 +63,10 @@ class DeductionQuestionWidget extends StatefulWidget {
       {super.key,
       required this.chooseWhat,
       required this.premisses,
-      required this.sentences,
+      required this.conclusions,
       required this.fontSize,
       required this.infoFontSize});
-  final List<String> sentences;
+  final List<String> conclusions;
   final List<String> premisses;
   final String chooseWhat;
   final double fontSize, infoFontSize;
@@ -83,6 +83,7 @@ class _DeductionQuestionWidgetState extends State<DeductionQuestionWidget> {
   late Color backgroundColor;
   late Offset distance = const Offset(5, 5);
   final blur = 15.0;
+  final List<bool> _isChecked = List<bool>.filled(5, false);
 
   @override
   Widget build(BuildContext context) {
@@ -329,7 +330,7 @@ class _DeductionQuestionWidgetState extends State<DeductionQuestionWidget> {
                     style: TextStyle(
                       fontSize: widget.fontSize,
                     ),
-                    maxLines: 2,
+                    maxLines: null,
                     overflow: TextOverflow.visible,
                   ),
                 )
@@ -344,9 +345,12 @@ class _DeductionQuestionWidgetState extends State<DeductionQuestionWidget> {
   Widget _buildSentenceList() {
     // const optionsFontSize =
     //     16.0; //Theme.of(context).textTheme.bodyMedium!.fontSize;
+    const distance = Offset(1, 1);
+    const blur = 1.0;
+
     return ListView.separated(
       shrinkWrap: true,
-      itemCount: widget.sentences.length,
+      itemCount: widget.conclusions.length,
       separatorBuilder: (context, index) => Divider(
         height: 1,
         color: Colors.grey[200],
@@ -370,14 +374,29 @@ class _DeductionQuestionWidgetState extends State<DeductionQuestionWidget> {
                 fontSize: widget.fontSize,
               ),
             ),
+            // const ShadowedWidget(
+            //   width: 15,
+            //   height: 15,
+            //   blur: blur,
+            //   distance: distance,
+            //   shadowColor: Color.fromARGB(255, 45, 45, 45),
+            //   child: Checkbox(
+            //     value: false,
+            //     onChanged: null,
+            //     fillColor: WidgetStateColor.fromMap({
+            //       WidgetState.selected: Colors.blue,
+            //       WidgetState.disabled: Colors.white,
+            //     }),
+            //   ),
+            // ),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                widget.sentences[index],
+                widget.conclusions[index],
                 style: TextStyle(
                   fontSize: widget.fontSize,
                 ),
-                maxLines: 2,
+                maxLines: null,
                 overflow: TextOverflow.visible,
               ),
             )
@@ -447,12 +466,15 @@ class ShadowIcon extends StatefulWidget {
   final Color? shadowColor;
   final Color? iconColor;
   final Icon icon;
+  final double width, height;
   const ShadowIcon(
       {super.key,
       this.backgroundColor,
       this.shadowColor,
       this.iconColor,
-      required this.icon});
+      required this.icon,
+      this.width = 35,
+      this.height = 35});
 
   @override
   State<ShadowIcon> createState() => _ShadowIconState();
@@ -470,8 +492,8 @@ class _ShadowIconState extends State<ShadowIcon> {
     final iconColor = widget.iconColor ?? Colors.brown[300];
 
     return Container(
-      width: 35,
-      height: 35,
+      width: widget.width,
+      height: widget.height,
       //padding: const EdgeInsets.all(0.0),
       decoration: BoxDecoration(
         color: backgroundColor, // Sepia background color
@@ -500,6 +522,116 @@ class _ShadowIconState extends State<ShadowIcon> {
           },
         ),
       ),
+    );
+  }
+}
+
+/// it does not work.
+class ShadowWidget extends StatefulWidget {
+  final Color? backgroundColor;
+  final Color? shadowColor;
+  final Color? iconColor;
+  final double width, height;
+  final Widget child;
+  const ShadowWidget(
+      {super.key,
+      this.backgroundColor,
+      this.shadowColor,
+      this.iconColor,
+      this.width = 35,
+      this.height = 35,
+      required this.child});
+
+  @override
+  State<ShadowWidget> createState() => _ShadowWidgetState();
+}
+
+class _ShadowWidgetState extends State<ShadowWidget> {
+  @override
+  Widget build(BuildContext context) {
+    final backgroundColor =
+        widget.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor;
+    final shadowColor =
+        widget.shadowColor ?? const Color.fromARGB(255, 227, 172, 99);
+    const distance = Offset(5, 5);
+    const blur = 15.0;
+
+    return Container(
+      width: widget.width,
+      height: widget.height,
+      //padding: const EdgeInsets.all(0.0),
+      decoration: BoxDecoration(
+        color: backgroundColor, // Sepia background color
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            blurRadius: blur,
+            offset: -distance, // changes position of shadow
+            color: Colors.white.withAlpha(200),
+            spreadRadius: -5,
+          ),
+          BoxShadow(
+            blurRadius: blur,
+            offset: distance, // changes position of shadow
+            color: shadowColor, //Color(0xFFA7A9AF),
+            spreadRadius: -5,
+          ),
+        ],
+      ),
+      child: FittedBox(
+        child: widget.child,
+      ),
+    );
+  }
+}
+
+class ShadowedWidget extends StatelessWidget {
+  final Widget child;
+  final double width;
+  final double height;
+  final double blur;
+  final Offset distance;
+  final Color shadowColor;
+
+  const ShadowedWidget({
+    super.key,
+    required this.child,
+    required this.width,
+    required this.height,
+    required this.blur,
+    required this.distance,
+    required this.shadowColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Positioned(
+          child: Container(
+            width: width,
+            height: height,
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: blur,
+                  offset: -distance, // changes position of shadow
+                  color: Colors.white.withAlpha(200),
+                  spreadRadius: -5,
+                ),
+                BoxShadow(
+                  blurRadius: blur,
+                  offset: distance, // changes position of shadow
+                  color: shadowColor,
+                  spreadRadius: -5,
+                ),
+              ],
+            ),
+          ),
+        ),
+        child,
+      ],
     );
   }
 }
