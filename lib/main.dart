@@ -127,7 +127,7 @@ class _DeductionQuestionWidgetState extends State<DeductionQuestionWidget> {
                         ],
                       ),
                       margin: const EdgeInsets.fromLTRB(10, 10, 20, 10),
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.fromLTRB(8, 8, 5, 5),
                       child: _buildPremisses(),
                     ),
                     Container(
@@ -151,7 +151,9 @@ class _DeductionQuestionWidgetState extends State<DeductionQuestionWidget> {
                         ],
                       ),
                       margin: const EdgeInsets.fromLTRB(10, 10, 20, 10),
-                      padding: const EdgeInsets.all(10),
+                      //padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.fromLTRB(8, 6, 5, 5),
+
                       child: _buildSentenceList(),
                     ),
                   ],
@@ -193,7 +195,7 @@ class _DeductionQuestionWidgetState extends State<DeductionQuestionWidget> {
             stops: const [0.0, 0.1, 1.0], // Transition at 10% of the height
           ),
         ),
-        padding: const EdgeInsets.fromLTRB(8, 5, 8, 5),
+        padding: const EdgeInsets.fromLTRB(8, 5, 12, 5),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -236,9 +238,9 @@ class _DeductionQuestionWidgetState extends State<DeductionQuestionWidget> {
             ),
             ShadowButton(
               onPressed: () {},
-              backgroundColor: Colors.lightBlueAccent,
+              backgroundColor: const Color.fromARGB(255, 203, 242, 255),
               shadowColor: const Color.fromARGB(255, 72, 1, 1),
-              child: const Text('Verify'),
+              child: const Text('Verify', style: TextStyle(fontSize: 18)),
             ),
             const Row(
               children: [
@@ -248,7 +250,7 @@ class _DeductionQuestionWidgetState extends State<DeductionQuestionWidget> {
                     color: Colors.blueGrey,
                     //size: 20,
                   ),
-                  backgroundColor: Colors.lightGreenAccent,
+                  backgroundColor: Color.fromARGB(255, 213, 255, 236),
                   iconColor: Colors.black87,
                   shadowColor:
 
@@ -258,7 +260,7 @@ class _DeductionQuestionWidgetState extends State<DeductionQuestionWidget> {
                 SizedBox(width: 15),
                 ShadowIcon(
                   icon: Icon(Icons.history_outlined, color: Colors.black45),
-                  backgroundColor: Color.fromARGB(255, 216, 150, 104),
+                  backgroundColor: Color.fromARGB(255, 247, 229, 173),
                   iconColor: Colors.black45,
                   shadowColor: Color.fromARGB(255, 6, 24, 37),
                 ),
@@ -272,8 +274,8 @@ class _DeductionQuestionWidgetState extends State<DeductionQuestionWidget> {
   }
 
   Widget _buildPremisses() {
-    const premissesFontSize =
-        16.0; //Theme.of(context).textTheme.bodyMedium!.fontSize;
+    // const premissesFontSize =
+    //     16.0; //Theme.of(context).textTheme.bodyMedium!.fontSize;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -340,8 +342,8 @@ class _DeductionQuestionWidgetState extends State<DeductionQuestionWidget> {
   }
 
   Widget _buildSentenceList() {
-    const optionsFontSize =
-        16.0; //Theme.of(context).textTheme.bodyMedium!.fontSize;
+    // const optionsFontSize =
+    //     16.0; //Theme.of(context).textTheme.bodyMedium!.fontSize;
     return ListView.separated(
       shrinkWrap: true,
       itemCount: widget.sentences.length,
